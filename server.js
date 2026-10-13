@@ -1,5 +1,5 @@
 const express = require('express');
-const pool = require('./db')
+const { pool, initDB } = require('./db');
 const app = express();
 const PORT = 3000;
 
@@ -413,8 +413,8 @@ app.get("/reports/suppliers-starting-with-f" , async (req , res) =>{
     try{
         const [suppliers] = await pool.execute(
             `SELECT * FROM Suppliers 
-            WHERE SupplierName LIKE = ?` ,
-            ['%F']
+            WHERE SupplierName LIKE ?` ,
+            ['F%']
         );
         res.status(200).json(suppliers);
     }catch(error){
@@ -426,12 +426,12 @@ app.get("/reports/suppliers-starting-with-f" , async (req , res) =>{
 app.get("/reports/never-sold", async (req , res) => {
     try{
         const [products] = await pool.query(
-            `SELECT P.*
+            `SELECT p.*
             FROM Products p LEFT JOIN Sales s 
             ON p.ProductID = s.ProductID
             WHERE s.ProductID IS NULL`
         );
-        res.status.json(products);
+        res.status(200).json(products);
     }catch(error){
         console.log(error);
         res.status(500).json({
@@ -442,9 +442,9 @@ app.get("/reports/never-sold", async (req , res) => {
 //q13
 app.get("/reports/sales-details" , async (req , res) =>{
     try{
-        const [sales] = pool.query(
+        const [sales] = await pool.query(
             `SELECT p.ProductName , s.QuantitySold , s.SaleDate
-            FROM Sales s join Product
+            FROM Sales s JOIN Products p
             ON p.ProductID = s.ProductID `
         );
         res.status(200).json(sales);
@@ -456,6 +456,11 @@ app.get("/reports/sales-details" , async (req , res) =>{
 });
 //q14,15,,16 i solved it in a separsted file
 
-app.listen(PORT , () => {
-    console.log(`server running on port ${PORT}`)
-})
+initDB()
+    .then(() => {
+        app.listen(PORT, () => console.log(`server running on port ${PORT}`));
+    })
+    .catch(err => {
+        console.error('DB init failed:', err);
+        process.exit(1);
+    });
