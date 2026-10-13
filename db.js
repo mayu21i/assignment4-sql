@@ -15,12 +15,10 @@ const pool = mysql.createPool({
 });
 
 async function initDB() {
-    // 1. create the database if it doesn't exist
     const conn = await mysql.createConnection(config);
     await conn.query('CREATE DATABASE IF NOT EXISTS retail_store');
     await conn.end();
 
-    // 2. create the tables (parent tables first)
     await pool.query(`CREATE TABLE IF NOT EXISTS Suppliers(
         SupplierID INT AUTO_INCREMENT PRIMARY KEY,
         SupplierName VARCHAR(100),
