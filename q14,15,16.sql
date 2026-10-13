@@ -16,4 +16,4 @@ GRANT DELETE
 ON retail_store.Sales
 TO 'store_manager'@'localhost';
 
--- i excuted on xampp
+-- i excuted on xampp 
