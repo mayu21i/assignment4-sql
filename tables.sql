@@ -20,3 +20,4 @@ CREATE TABLE Sales(
     SaleDate DATE,
     FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
 );
+-- I excuted them on xampp admin thats just my code as a proof.

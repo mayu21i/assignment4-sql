@@ -408,6 +408,53 @@ app.get("/reports/highest-stock", async (req, res) => {
     res.status(500).json({ error: "Couldn't retrieve highest-stock product" });
   }
 });
+//q11
+app.get("/reports/suppliers-starting-with-f" , async (req , res) =>{
+    try{
+        const [suppliers] = await pool.execute(
+            `SELECT * FROM Suppliers 
+            WHERE SupplierName LIKE = ?` ,
+            ['%F']
+        );
+        res.status(200).json(suppliers);
+    }catch(error){
+        console.log(error);
+        res.status(500).json({ error: "Couldn't retrieve suppliers" });  
+    }
+});
+//q12
+app.get("/reports/never-sold", async (req , res) => {
+    try{
+        const [products] = await pool.query(
+            `SELECT P.*
+            FROM Products p LEFT JOIN Sales s 
+            ON p.ProductID = s.ProductID
+            WHERE s.ProductID IS NULL`
+        );
+        res.status.json(products);
+    }catch(error){
+        console.log(error);
+        res.status(500).json({
+        error: "Couldn't retrieve products that were never sold",
+    });
+    }
+});
+//q13
+app.get("/reports/sales-details" , async (req , res) =>{
+    try{
+        const [sales] = pool.query(
+            `SELECT p.ProductName , s.QuantitySold , s.SaleDate
+            FROM Sales s join Product
+            ON p.ProductID = s.ProductID `
+        );
+        res.status(200).json(sales);
+    }catch(error){
+        console.log(error);
+        res.status(500).json({ error: "Couldn't retrieve sales details" });
+    }
+
+});
+//q14,15,,16 i solved it in a separsted file
 
 app.listen(PORT , () => {
     console.log(`server running on port ${PORT}`)
